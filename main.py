@@ -74,6 +74,8 @@ class Player:
             currentinput = input('hit(h) or stand(s): ')
             if currentinput[0].lower == 'h':
                 playerstatus = 'h'
+                if self.countcards() > 21:
+                    playerstatus = 'b'
                 break
             elif currentinput[0].lower == 's':
                 playerstatus = 's'
@@ -116,7 +118,7 @@ while True:
     standcount = 0
     counter = 0
     while True:
-        if standcount == playercount - 1:
+        if standcount == playercount:
             bestforwin = [players[0]]
             for i in players:
                 if bestforwin[0].countcards() < i.countcards():
@@ -138,31 +140,9 @@ while True:
                 break
         if not players[(counter % playercount) - 1].stillin:
             continue
-        while True:
-            print('player ' + str(counter % playercount) + ':')
-            print(str(players[(counter % playercount) - 1]))
-            print(str(players[(counter % playercount) - 1].countcards()))
-            currentstatus = input('hit(h) or stand(s) player ' + str((counter % playercount) - 1) + ':')
-            if currentstatus == 'hit' or currentstatus == 'h':
-                players[(counter % playercount) - 1].deal(1)
-                print(str(players[(counter % playercount) - 1]))
-                print(str(players[(counter % playercount) - 1].countcards()))
-                if players[(counter % playercount) - 1].countcards() == 21:
-                    players[(counter % playercount) - 1].wins += 1
-                    counter = 0
-                    for i in players:
-                        i.reset()
-                elif players[(counter % playercount) - 1].countcards() > 21:
-                    print('bust')
-                    players[(counter % playercount) - 1].stillin = False
-                break
-            elif currentstatus == 'stand' or currentstatus == 's':
-                print(str(players[(counter % playercount) - 1]))
-                print(str(players[(counter % playercount) - 1].countcards()))
-                standcount += 1
-                break
-            print('that was not a playable input')
-        
+        currentoutput = players[(counter % playercount) - 1].playplayer(counter % playercount)
+        if currentoutput == 'b':
+            players.remove((counter % playercount) - 1)
         #time.sleep(2)
         #clear_terminal()
         counter += 1
