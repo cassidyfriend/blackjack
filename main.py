@@ -68,16 +68,19 @@ class Player:
     def playplayer(self, playerID):
         print('player' + str(playerID) + '\'s cards: ')
         print(f"\n{''.join(map(str, self.playercards))}")
-        print(str(self.countcards))
+        print(str(self.countcards()))
         playerstatus = ''
         while True:
             currentinput = input('hit(h) or stand(s): ')
-            if currentinput[0].lower == 'h':
+            if currentinput == 'h':
                 playerstatus = 'h'
+                self.addcard()
+                print('player' + str(playerID) + '\'s cards: ')
+                print(f"\n{''.join(map(str, self.playercards))}")
                 if self.countcards() > 21:
                     playerstatus = 'b'
                 break
-            elif currentinput[0].lower == 's':
+            elif currentinput == 's':
                 playerstatus = 's'
                 break
             print('that was not a playable input \n')
