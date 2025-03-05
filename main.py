@@ -43,15 +43,20 @@ def doesarraycontainat(array, value, loc):
     except:
         value_index = -1
     return value_index == loc
+def makestringofwinners(winners):
+    output = ''
+    for i in winners:
+        output += i.playerID + ', '
 
 class Player:
     playercards = []
     wins = 0
     stillin = True
-    def __init__(self):
+    def __init__(self, playerID):
         self.status = 0  # 0: nothing, 1: hitting, 2: out
         self.playercards = []  # Use instance-level attributes
         self.deal(2)
+        self.playerID = playerID
 
     def deal(self, dealamount):
         cardcount = 0
@@ -65,23 +70,30 @@ class Player:
                 cardcount += 1
     def addcard(self):
         self.deal(1)
-    def playplayer(self, playerID):
-        print('player' + str(playerID) + '\'s cards: ')
+    def playplayer(self):
+        if self.stillin == False:
+            return 's'
+        print('player' + str(self.playerID) + '\'s cards: ')
         print(f"\n{''.join(map(str, self.playercards))}")
-        print(str(self.countcards))
+        print(str(self.countcards()))
         playerstatus = ''
         while True:
             currentinput = input('hit(h) or stand(s): ')
-            if currentinput[0].lower == 'h':
-                playerstatus = 'h'
-                if self.countcards() > 21:
-                    playerstatus = 'b'
+            if currentinput == 'h' or currentinput == 's':
+                playerstatus = currentinput
                 break
-            elif currentinput[0].lower == 's':
-                playerstatus = 's'
-                break
-            print('that was not a playable input \n')
-        
+            else:
+                print('that was not a playable input \n')
+        if playerstatus == 's':
+            return 's'
+        self.deal(1)
+        print('player' + str(self.playerID) + '\'s cards: ')
+        print(f"\n{''.join(map(str, self.playercards))}")
+        if self.countcards() > 21:
+            self.stillin = False
+            print('bust')
+            playerstatus = 'b'
+        return playerstatus
     def countcards(self):
         #print(self.__str__())
         amount = 0
@@ -104,45 +116,47 @@ class Player:
         return f"Player's cards: \n{''.join(map(str, self.playercards))}"
         # + " " + str(len(self.playercards)
 
+playercount = 0
+players = []
+shouldresetamount = True
 while True:
-    playercount = 0
-    players = []
-    while True:
-        current = input('amount of players: ')
-        iscurrent = is_castable_to_number(current)
-        if iscurrent and int(current) > 1:
-            playercount = int(current)
-            break
-    for i in range(playercount - 1):
-        players.append(Player())
+    if shouldresetamount:
+        while True:
+            current = input('amount of players: ')
+            iscurrent = is_castable_to_number(current)
+            if iscurrent and int(current) > 1:
+                print(current)
+                playercount = int(current)
+                break
+    for i in range(playercount):
+        players.append(Player(str(i)))
     standcount = 0
     counter = 0
     while True:
         if standcount == playercount:
             bestforwin = [players[0]]
             for i in players:
-                if bestforwin[0].countcards() < i.countcards():
-                    bestforwin[0] = i
-                elif bestforwin[0].countcards() == i.countcards() and doesarraycontainat(bestforwin, i, 0):
+                if i.countcards() == bestforwin[0].countcards() and not i.playerID == players[0].playerID:
                     bestforwin.append(i)
-                i.reset()
-            for i in bestforwin:
-                i.wins += 1
-            print(f"winner(s): \n{''.join(map(str, bestforwin))}")
-            nextinput = ''
-            counter = 0
-            while True:
-                nextinput = input('continue game(c) or reset(r)')
-                if nextinput == 'continue' or nextinput == 'continue game' or nextinput == 'c' or nextinput == 'reset' or nextinput == 'r':
-                    break
-                print('that was not a usable input')
-            if nextinput == 'reset' or nextinput == 'r':
+                elif i.countcards() > bestforwin[0].countcards():
+                    bestforwin = [i]
+            if len(bestforwin) == 1:
+                print(str(bestforwin[0].playerID) + ' wins!')
                 break
-        if not players[(counter % playercount) - 1].stillin:
-            continue
-        currentoutput = players[(counter % playercount) - 1].playplayer(counter % playercount)
-        if currentoutput == 'b':
-            players.remove((counter % playercount) - 1)
-        #time.sleep(2)
-        #clear_terminal()
-        counter += 1
+            else:
+                print(('tie between: ' + str(makestringofwinners(bestforwin)))[:-2])
+            gamestatus = input('should the game be fully reset? (y) or (n) ')
+            if gamestatus == 'y':
+                shouldresetamount = True
+            elif gamestatus == 'n':
+                shouldresetamount = False
+        for i in players:
+            #print('currently on:' + str(i.playerID))
+            if not i.stillin:
+                continue
+            currentoutput = i.playplayer()
+            if currentoutput == 's':
+                standcount += 1
+            #time.sleep(3)
+            #clear_terminal()
+        #counter += 1
