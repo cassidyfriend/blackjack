@@ -79,6 +79,7 @@ class Player:
         playerstatus = ''
         while True:
             currentinput = input('hit(h) or stand(s): ')
+<<<<<<< HEAD
             if currentinput == 'h' or currentinput == 's':
                 playerstatus = currentinput
                 break
@@ -94,6 +95,21 @@ class Player:
             print('bust')
             playerstatus = 'b'
         return playerstatus
+=======
+            if currentinput == 'h':
+                playerstatus = 'h'
+                self.addcard()
+                print('player' + str(playerID) + '\'s cards: ')
+                print(f"\n{''.join(map(str, self.playercards))}")
+                if self.countcards() > 21:
+                    playerstatus = 'b'
+                break
+            elif currentinput == 's':
+                playerstatus = 's'
+                break
+            print('that was not a playable input \n')
+        
+>>>>>>> 8a5e007831689e8e0163aed879c8bbe6cedb9f69
     def countcards(self):
         #print(self.__str__())
         amount = 0
@@ -143,6 +159,7 @@ while True:
             if len(bestforwin) == 1:
                 print(str(bestforwin[0].playerID) + ' wins!')
                 break
+<<<<<<< HEAD
             else:
                 print(('tie between: ' + str(makestringofwinners(bestforwin)))[:-2])
             gamestatus = input('should the game be fully reset? (y) or (n) ')
@@ -160,3 +177,13 @@ while True:
             #time.sleep(3)
             #clear_terminal()
         #counter += 1
+=======
+        if not players[(counter % playercount) - 1].stillin:
+            continue
+        currentoutput = players[(counter % playercount) - 1].playplayer(counter % playercount)
+        if currentoutput == 'b':
+            players.remove((counter % playercount) - 1)
+        #time.sleep(2)
+        #clear_terminal()
+        counter += 1
+>>>>>>> 8a5e007831689e8e0163aed879c8bbe6cedb9f69
